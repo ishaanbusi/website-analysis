@@ -158,6 +158,17 @@ const WebsitePerformanceTracker = () => {
     mobileTrafficShare: 64,
   };
 
+  type PerformanceData = typeof performanceData;
+  type PerformanceDataKey = keyof PerformanceData;
+
+  interface Metric {
+    data: PerformanceDataKey;
+  }
+
+  const metric: Metric = {
+    data: "fid", // ✅ TypeScript will check this is valid
+  };
+
   // Complete metrics structure
   const metricsStructure = [
     {
@@ -346,13 +357,13 @@ const WebsitePerformanceTracker = () => {
       },
       {
         label: "FID (ms) / 10",
-        data: performanceData.fid.slice(0, 6).map((val) => val / 10),
+        data: performanceData.fid.slice(0, 6).map((val) => Number(val) / 10),
         borderColor: "rgb(53, 162, 235)",
         backgroundColor: "rgba(53, 162, 235, 0.2)",
       },
       {
         label: "CLS * 10",
-        data: performanceData.cls.slice(0, 6).map((val) => val * 10),
+        data: performanceData.cls.slice(0, 6).map((val) => Number(val) * 10),
         borderColor: "rgb(255, 205, 86)",
         backgroundColor: "rgba(255, 205, 86, 0.2)",
       },
@@ -435,15 +446,20 @@ const WebsitePerformanceTracker = () => {
                       <input
                         type="text"
                         defaultValue={
-                          performanceData[metric.data][weekIndex] || ""
+                          performanceData[
+                            metric.data as keyof typeof performanceData
+                          ][weekIndex]?.toString() || ""
                         }
                         placeholder={
-                          performanceData[metric.data][weekIndex] || ""
+                          performanceData[
+                            metric.data as keyof typeof performanceData
+                          ][weekIndex]?.toString() || ""
                         }
                         className="w-full text-center border border-gray-300 rounded px-1 py-1 text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </td>
                   ))}
+
                   <td className="px-3 py-3 text-center font-medium bg-gray-100">
                     {metric.avg}
                   </td>
